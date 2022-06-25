@@ -62,7 +62,9 @@ extern int yydebug;
     _RELOP = 272,
     _MAP = 273,
     _COMMA = 274,
-    ONLY_IF = 275
+    _RCORNER = 275,
+    _LCORNER = 276,
+    ONLY_IF = 277
   };
 #endif
 
@@ -71,12 +73,12 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 25 "micko.y" /* yacc.c:1909  */
+#line 32 "micko.y" /* yacc.c:1909  */
 
   int i;
   char *s;
 
-#line 80 "micko.tab.h" /* yacc.c:1909  */
+#line 82 "micko.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

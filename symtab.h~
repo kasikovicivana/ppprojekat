@@ -6,7 +6,7 @@ struct struct_dictionary{
 	unsigned key;
 	unsigned value;
 };
-typedef struct struct_dictionary struct_dict_elements;
+typedef struct struct_dictionary struct_atribute;
 
 // Element tabele simbola
 typedef struct sym_entry {

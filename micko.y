@@ -1,5 +1,6 @@
 %{
   #include <stdio.h>
+  #include <string.h>
   #include <stdlib.h>
   #include "defs.h"
   #include "symtab.h"
@@ -20,6 +21,12 @@
   int fcall_idx = -1;
   int lab_num = -1;
   FILE *output;
+  struct_dict_elements* elements_map[128];
+  int idx = 0;
+  int array_assigned_elements_idx[100];
+  int num_assigned_elements = 0;
+  
+
 %}
 
 %union {
@@ -44,8 +51,10 @@
 %token <i> _RELOP
 %token _MAP
 %token _COMMA
+%token _RCORNER
+%token _LCORNER
 
-%type <i> num_exp exp literal
+%type <i> num_exp exp literal assign_dict
 %type <i> function_call argument rel_exp if_part
 
 %nonassoc ONLY_IF
@@ -67,17 +76,18 @@ dictionary_list
 	;
 
 dictionary
-	:	_MAP _RELOP _TYPE _COMMA _TYPE _RELOP _ID values_def _SEMICOLON
+	:	_MAP _RELOP _TYPE _COMMA _TYPE _RELOP _ID 
 		{
         if (lookup_symbol($7, MAP) != NO_INDEX)
            err("already defined dictionary with same name '%s'", $7);
         else{
 			int type1 = get_type($3);
 			int type2 = get_type($5);
-           	int struct_idx = insert_symbol($7, MAP,type1, type2, 0);
-           
+            idx = insert_symbol($7, MAP, type2, type1, 1);
+           //struct_dict_elements* types = (struct_dict_elements*) malloc(sizeof(struct_dict_elements)*128);			//cuvam mjesto za atribute
+           //elements_map[idx] = types;
      }
-		}
+		}values_def _SEMICOLON
 	;
 
 values_def
@@ -92,7 +102,21 @@ values_list
 
 value
 	:	_LBRACKET literal _COMMA literal _RBRACKET
+		{
+			char* map_attribute_name;
+		    char* map_name = get_name(idx);
+			map_attribute_name = malloc(strlen(map_name)+1+90);
+			strcat(map_attribute_name, map_name);
+			strcat(map_attribute_name, "_"); 
+			strcat(map_attribute_name, get_name($2));
+		        code("\n%s:\n\t\tWORD\t1", map_attribute_name);
+		      	int atr_id = insert_symbol(map_attribute_name, MAP_ATR,atoi		(get_name($2)), idx, atoi(get_name($4)));
+			array_assigned_elements_idx[num_assigned_elements]= atr_id;
+	      	num_assigned_elements++;
+		}
 	;	
+
+
 	
 function_list
   : function
@@ -141,7 +165,23 @@ body
       {
         if(var_num)
           code("\n\t\tSUBS\t%%15,$%d,%%15", 4*var_num);
-        code("\n@%s_body:", get_name(fun_idx));
+		const char* name = get_name(fun_idx);
+        code("\n@%s_body:", name);
+        char* name_with_extension;
+			name_with_extension = malloc(strlen(name)+1+50);
+			strcpy(name_with_extension, get_name(fun_idx));
+			strcat(name_with_extension, "_body"); 
+	 		if (strcmp(name_with_extension, "main_body") == 0){
+              int i = 0;
+              for(; i < num_assigned_elements; i++){
+              	int idx = array_assigned_elements_idx[i];
+              	char* name_with_extension;
+	    	name_with_extension = malloc(100);
+	    	sprintf(name_with_extension, "%d", get_atr2(idx));
+              	gen_mov(lookup_symbol(name_with_extension, LIT), idx);
+              }
+            
+        }
       }
     statement_list _RBRACKET
   ;
@@ -185,8 +225,18 @@ assignment_statement
           err("invalid lvalue '%s' in assignment", $1);
         else
           if(get_type(idx) != get_type($3))
-            err("incompatible types in assignment");
+            err("incompatible types in assignmentt");
         gen_mov($3, idx);
+      }
+	| assign_dict _ASSIGN num_exp _SEMICOLON
+      {
+			
+          if ($1 != -1){
+	      	if(get_type($1) != get_type($3))
+			err("incompatible types in assignmenttt"); 
+	    	gen_mov($3, $1);
+			//set_atr2($1, $3);
+        }
       }
   ;
 
@@ -229,8 +279,30 @@ exp
   
   | _LPAREN num_exp _RPAREN
       { $$ = $2; }
+ | assign_dict
+      { $$ = $1; }
   ;
 
+assign_dict
+	: _ID _LCORNER literal _RCORNER
+	{
+	idx = lookup_symbol($1, MAP);
+	if (idx == NO_INDEX){
+		err("undefined map '%s'", $1);
+		
+	}
+	else
+	{
+			char* map_attribute_name;
+            const char* name = $1;
+			map_attribute_name = malloc(strlen(name)+1+50);
+			strcpy(map_attribute_name, name); 
+			strcat(map_attribute_name, "_"); 
+			strcat(map_attribute_name, get_name($3));
+			$$ = lookup_symbol(map_attribute_name, MAP_ATR);
+	}}
+	;
+ 
 literal
   : _INT_NUMBER
       { $$ = insert_literal($1, INT); }

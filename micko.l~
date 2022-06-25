@@ -17,6 +17,9 @@
 "return"             { return _RETURN; }
 "map"			{return _MAP;}
 
+
+"["			{return _LCORNER;}
+"]"			{ return _RCORNER;}
 "("                  { return _LPAREN; }
 ")"                  { return _RPAREN; }
 "{"                  { return _LBRACKET; }
