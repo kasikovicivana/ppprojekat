@@ -72,7 +72,7 @@ int lookup_symbol(char *name, unsigned kind) {
 
 
 // Vraca indeks pronadjenog atributa u strukturi ili vraca -1.
-int lookup_symbol_attribute(char *name, unsigned kind, int index_struct_var){
+int lookup_symbol_struct(char *name, unsigned kind, int index_struct_var){
   int i;
   for(i = first_empty - 1; i > FUN_REG; i--) {
     if(strcmp(symbol_table[i].name, name) == 0 

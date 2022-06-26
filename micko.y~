@@ -110,7 +110,7 @@ value
 			strcat(map_attribute_name, "_"); 
 			strcat(map_attribute_name, get_name($2));
 		        code("\n%s:\n\t\tWORD\t1", map_attribute_name);
-		      	int atr_id = insert_symbol(map_attribute_name, MAP_ATR,atoi		(get_name($2)), idx, atoi(get_name($4)));
+	int atr_id = insert_symbol(map_attribute_name, 			MAP_ATR,atoi(get_name($2)), idx, atoi(get_name($4)));
 			array_assigned_elements_idx[num_assigned_elements]= atr_id;
 	      	num_assigned_elements++;
 		}
@@ -173,8 +173,8 @@ body
 			strcat(name_with_extension, "_body"); 
 	 		if (strcmp(name_with_extension, "main_body") == 0){
               int i = 0;
-              for(; i < num_assigned_elements_idx; i++){
-              	int idx = array_assigned_elements[i];
+              for(; i < num_assigned_elements; i++){
+              	int idx = array_assigned_elements_idx[i];
               	char* name_with_extension;
 	    	name_with_extension = malloc(100);
 	    	sprintf(name_with_extension, "%d", get_atr2(idx));
@@ -230,7 +230,10 @@ assignment_statement
       }
 	| assign_dict _ASSIGN num_exp _SEMICOLON
       {
-			
+	
+					if ($1 == NO_INDEX){
+
+					}	
           if ($1 != -1){
 	      	if(get_type($1) != get_type($3))
 			err("incompatible types in assignmenttt"); 
@@ -293,13 +296,19 @@ assign_dict
 	}
 	else
 	{
-			char* map_attribute_name;
-            const char* name = $1;
-			map_attribute_name = malloc(strlen(name)+1+50);
-			strcpy(map_attribute_name, name); 
-			strcat(map_attribute_name, "_"); 
-			strcat(map_attribute_name, get_name($3));
-			$$ = lookup_symbol(map_attribute_name, MAP_ATR);
+	char* map_attribute_name;
+	const char* name = $1;
+	map_attribute_name = malloc(strlen(name)+1+50);
+	strcpy(map_attribute_name, name); 
+	strcat(map_attribute_name, "_"); 
+	strcat(map_attribute_name, get_name($3));
+	int id = lookup_symbol(map_attribute_name, MAP_ATR);
+	if (id == -1){
+		code("\n%s:\n\t\tWORD\t1", map_attribute_name);
+		$$ = insert_symbol(map_attribute_name, MAP_ATR,NO_ATR,idx, NO_ATR);
+	}else{
+		$$ = id;
+	}
 	}}
 	;
  
