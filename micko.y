@@ -114,8 +114,7 @@ dictionary
         if (lookup_symbol($7, MAP) != NO_INDEX)
            err("already defined dictionary with same name '%s'", $7);
         else{
-			int type1 = get_type($3);
-			int type2 = get_type($5);
+			
       idx = insert_symbol($7, MAP, $5, $3, 0);
 			}
 
