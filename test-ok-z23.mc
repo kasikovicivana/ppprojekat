@@ -7,7 +7,7 @@ map <int,unsigned> mapa2 = { {1,2},{3,5}};
 
 int main() {
   int a;
-  mapa2[1] = 2;
+  mapa2[1] = 20u;
   return 0;
 }
 

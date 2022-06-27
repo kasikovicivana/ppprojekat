@@ -10,7 +10,7 @@ main:
 @main_body:
 		MOV 	$2,mapa2_1
 		MOV 	$5,mapa2_3
-		MOV 	$2,mapa2_1
+		MOV 	$20,mapa2_1
 		MOV 	$0,%13
 		JMP 	@main_exit
 @main_exit:

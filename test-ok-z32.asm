@@ -1,15 +1,33 @@
 
+2:
+		WORD	1
+1:
+		WORD	1
+0:
+		WORD	1
+1:
+		WORD	1
 mapa1_1:
+		WORD	1
+0:
+		WORD	1
+1:
 		WORD	1
 mapa2_1:
 		WORD	1
 mapa2_2:
+		WORD	1
+0:
+		WORD	1
+1:
 		WORD	1
 mapa3_4:
 		WORD	1
 mapa3_2:
 		WORD	1
 mapa4_4:
+		WORD	1
+mapa4_3:
 		WORD	1
 main:
 		PUSH	%14
@@ -18,6 +36,8 @@ main:
 @main_body:
 		MOV 	$2,mapa4_4
 		MOV 	$2,mapa4_4
+		MOV 	$1,mapa4_3
+		MOV 	$1,mapa4_3
 		MOV 	$2,mapa1_1
 		MOV 	$2,mapa2_1
 		MOV 	$5,mapa2_2
@@ -25,9 +45,9 @@ main:
 		MOV 	$5,mapa3_2
 		MOV 	mapa1_1,-4(%14)
 		MOV 	$5,mapa1_1
-		SUBS	mapa1_1,mapa2_1,%0
+		ADDS	mapa4_4,mapa4_3,%0
 		MOV 	%0,-4(%14)
-		MOV 	mapa4_4,%13
+		MOV 	-4(%14),%13
 		JMP 	@main_exit
 @main_exit:
 		MOV 	%14,%15

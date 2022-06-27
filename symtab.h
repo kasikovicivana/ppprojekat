@@ -3,7 +3,7 @@
 #define SYMTAB_H
 
 struct struct_dictionary{
-	unsigned key;
+	int idx;
 	unsigned value;
 };
 typedef struct struct_dictionary struct_dict_elements;

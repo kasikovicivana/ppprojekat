@@ -18,6 +18,8 @@ main:
 @main_body:
 		MOV 	$2,mapa4_4
 		MOV 	$2,mapa4_4
+		MOV 	$3,mapa4_4
+		MOV 	$3,mapa4_4
 		MOV 	$2,mapa1_1
 		MOV 	$2,mapa2_1
 		MOV 	$5,mapa2_2

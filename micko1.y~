@@ -26,7 +26,7 @@
   int idx = 0;
   int array_assigned_elements_idx[100];
   int num_assigned_elements = 0;
-	int elements_num = 0;
+	int first_time = -1;
   
 
 %}
@@ -65,35 +65,16 @@
 %%
 
 program
-  : dictionary_list
-		 {
-			struct_dict_elements* elements = (struct_dict_elements*) malloc(sizeof(struct_dict_elements)*128);
-           elements_map[0] = elements;
-			} 
-
-		assign_values_block function_list 
+  : dictionary_list function_list 
       {  
         if(lookup_symbol("main", FUN) == NO_INDEX){
           err("undefined reference to 'main'");}
+				first_time = 0;
       }
 
   ;
 
-assign_values_block
-	:
-	| assign_value assign_values_block
-	;
 
-assign_value
-	:assign_dict _ASSIGN num_exp _SEMICOLON
-      {
-					struct_dict_elements new_element;
-					new_element.idx =$1;
-					new_element.value =$3;
-					elements_map[0][elements_num] = new_element;
-					elements_num++;
-        }
-  ;
 dictionary_list
 	:
 	|	dictionary dictionary_list
@@ -102,23 +83,17 @@ dictionary_list
 dictionary
 	:	_MAP _RELOP _TYPE _COMMA _TYPE _RELOP _ID 
 		{
-			
-			if ($2 != 0)
-			{
-        err("invalid syntax in dictionary declaration");
-			}
-			if ($4 != 1)
-			{
-        err("invalid syntax in dictionary declaration");
-			}
+			//if(first_time == -1){
         if (lookup_symbol($7, MAP) != NO_INDEX)
            err("already defined dictionary with same name '%s'", $7);
         else{
 			int type1 = get_type($3);
 			int type2 = get_type($5);
       idx = insert_symbol($7, MAP, $5, $3, 0);
+           //struct_dict_elements* types = (struct_dict_elements*) malloc(sizeof(struct_dict_elements)*128);			//cuvam mjesto za atribute
+           //elements_map[idx] = types;
 			}
-
+     //}
 		}values_def _SEMICOLON
 	;
 
@@ -135,6 +110,7 @@ values_list
 value
 	:	_LBRACKET literal _COMMA literal _RBRACKET
 		{
+			//if(first_time == -1){
 			char* map_attribute_name;
 		  char* map_name = get_name(idx);
 			map_attribute_name = malloc(strlen(map_name)+1+90);
@@ -143,14 +119,14 @@ value
 			strcat(map_attribute_name, get_name($2));
 			int id = lookup_symbol(map_attribute_name, MAP_ATR);
 			if (id != -1){
-          		err("Key already used '%s'", get_name($2));
+          err("Key already used '%s'", get_name($2));
 			}
-
+			//if(first_time == -1){
 			  code("\n%s:\n\t\tWORD\t1", map_attribute_name);
 			int atr_id = insert_symbol(map_attribute_name, MAP_ATR,get_type						(idx),atoi(get_name($2)), 	atoi(get_name($4)));
 			array_assigned_elements_idx[num_assigned_elements]= atr_id;
 	    num_assigned_elements++;
-		}
+		}//}//}
 	;	
 
 
@@ -218,19 +194,6 @@ body
 				strcpy(name_with_extension, get_name(fun_idx));
 				strcat(name_with_extension, "_body"); 
 	 			if (strcmp(name_with_extension, "main_body") == 0){
-							int v = 0;
-              for(; v < elements_num; v++){
-							struct_dict_elements elem = elements_map[0][v];
-          	  if (get_atr1(elem.idx)==NO_ATR){  //dodaj provjeru da li valja tip
-				  			gen_mov(elem.value, elem.idx);
-					}	
-         if (elem.idx != -1){
-	      	if(get_type(elem.idx) != get_type(elem.value))
-						err("incompatible types in assignmenttt"); 
-				  gen_mov(elem.value, elem.idx);
-        }
-              	
-        }
               int i = 0;
               for(; i < num_assigned_elements; i++){
               	int idx = array_assigned_elements_idx[i];
@@ -281,7 +244,7 @@ compound_statement
 assignment_statement
   : _ID _ASSIGN num_exp _SEMICOLON
       {
-
+			//if(first_time != -1){
         int idx = lookup_symbol($1, VAR|PAR);
         if(idx == NO_INDEX)
           err("invalid lvalue '%s' in assignment", $1);
@@ -289,7 +252,7 @@ assignment_statement
           if(get_type(idx) != get_type($3))
             err("incompatible types in assignmentt");
         gen_mov($3, idx);}
-
+     // }
 	| assign_dict _ASSIGN num_exp _SEMICOLON
       {
 				//if(first_time != -1){
@@ -333,19 +296,21 @@ exp
 
   | _ID
       {
-
+				//if(first_time != -1){
         $$ = lookup_symbol($1, VAR|PAR);
         if($$ == NO_INDEX)
           err("'%s' undeclared", $1);
 				}
+      //}
 
   | function_call
       {
-
-
+			//	if(first_time != -1){
+			if(first_time != -1){
         $$ = take_reg();
-        gen_mov(FUN_REG, $$);}
-
+        gen_mov(FUN_REG, $$);}}
+      //}
+  
   | _LPAREN num_exp _RPAREN
       { $$ = $2; }
  | assign_dict
@@ -355,6 +320,7 @@ exp
 assign_dict
 	: _ID _LCORNER literal _RCORNER
 	{
+	//if(first_time != -1){
 	idx = lookup_symbol($1, MAP);
 	if (idx == NO_INDEX){
 		err("undefined map '%s'", $1);
@@ -362,9 +328,6 @@ assign_dict
 	}
 	else
 	{
-	if (get_atr1(idx)!=get_type($3)){
-			err("uncompatible type of dictionary key '%d'", $3);
-	}
 	char* map_attribute_name;
 	const char* name = $1;
 	map_attribute_name = malloc(strlen(name)+1+50);
@@ -378,7 +341,7 @@ assign_dict
 	}else{
 		$$ = id;
 	}
-	}}
+	}}//}
 	;
  
 literal
@@ -392,12 +355,14 @@ literal
 function_call
   : _ID 
       {
+			//if(first_time != -1){
         fcall_idx = lookup_symbol($1, FUN);
         if(fcall_idx == NO_INDEX)
           err("'%s' is not a function", $1);
-      }
+      }//}
     _LPAREN argument _RPAREN
       {
+				//if(first_time != -1){
         if(get_atr1(fcall_idx) != $4)
           err("wrong number of arguments");
         code("\n\t\t\tCALL\t%s", get_name(fcall_idx));
@@ -405,7 +370,7 @@ function_call
           code("\n\t\t\tADDS\t%%15,$%d,%%15", $4 * 4);
         set_type(FUN_REG, get_type(fcall_idx));
         $$ = FUN_REG;}
-     
+     // }
   ;
 
 argument
@@ -482,6 +447,11 @@ return_statement
 
 %%
 
+void first_parse(){
+    printf("\n%d index prije\n", first_time);
+	yyparse();
+	first_time = 0;
+}
 
 int yyerror(char *s) {
   fprintf(stderr, "\nline %d: ERROR: %s", yylineno, s);

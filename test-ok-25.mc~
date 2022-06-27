@@ -1,7 +1,7 @@
 //OPIS: sabiranje vrijednosti rjecnika
-//RETURN: 4
+//RETURN: 3
 
-map <int,int> mapa1;
+map <int,int> mapa1= {{1,1}};
 
 map <int,int> mapa2 = { {1,2},{3,5}};
 
@@ -9,7 +9,7 @@ int main() {
   int a;
   mapa1[1] = 2;
   a = mapa1[1] + mapa1[1];
-  return a;
+  return 4;
 }
 
 

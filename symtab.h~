@@ -2,11 +2,11 @@
 #ifndef SYMTAB_H
 #define SYMTAB_H
 
-struct struct_dictionary{
-	unsigned key;
+struct struct_dict_elements{
+	int idx;
 	unsigned value;
 };
-typedef struct struct_dictionary struct_atribute;
+typedef struct struct_dictionary struct_dict_elements;
 
 // Element tabele simbola
 typedef struct sym_entry {

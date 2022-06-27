@@ -43,32 +43,7 @@ $(SRC): $(COMPILER_DEPENDS)
 		echo -e "\e[01;31m\nThere are errors/warnings in grammar/actions!\n\e[00m" ; \
 		rm -f $(SRC) 2>/dev/null ; \
 		exit 1; \
-	fi; \$(SRC): $(COMPILER_DEPENDS)
-	@if [ "$(COMPILE_SIM)" != "" ]; then \
-		echo -e "\e[01;32mSIMULATOR...\e[00m"; \
-		make --silent -C ./hipsim-src/ SIMULATOR_PATH=../; \
-	fi
-	@echo -e "\e[01;32mGCC...\e[00m"
-	@-rm -f $(SRC) .make.out2 2>/dev/null
-	@gcc -o $@ $(COMPILER_BUILD) 2>&1 | tee .make.outg; pstat=$${PIPESTATUS[0]}; \
-	cat .make.outf .make.outb .make.outg > .make.out 2>/dev/null; \
-	out=`grep -Ei "conflict|warning|error" .make.out 2>/dev/null`; \
-	if [ "$$out" != "" ]; then \
-		cat .make.outf .make.outb; \
-		echo -e "\e[01;31m\nThere are errors/warnings in grammar/actions!\n\e[00m" ; \
-		rm -f $(SRC) 2>/dev/null ; \
-		exit 1; \
 	fi; \
-	exit $$pstat
-
-lex.yy.c: $(SRC).l $(SRC).tab.c
-	@echo -e "\e[01;32mFLEX...\e[00m"
-	@flex $< 2>&1 | tee .make.outf; exit $${PIPESTATUS[0]}
-
-$(SRC).tab.c: $(SRC).y
-	@echo -e "\e[01;32mBISON...\e[00m"
-	@bison -d -v $< 2>&1 | tee .make.outb; exit $${PIPESTATUS[0]}
-
 	exit $$pstat
 
 lex.yy.c: $(SRC).l $(SRC).tab.c

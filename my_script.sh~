@@ -1,0 +1,18 @@
+#! /bin/bash
+
+chmod u+x my_script.sh
+
+echo "krajjj"
+bison -d *.y
+echo "krajjj"
+flex *.l
+echo "krajjj"
+gcc *.c -o parser
+echo "krajjj"
+
+./parser < test-ok-25.mc >test.txt
+
+./hipsim --r < output.asm
+
+echo "krajjj"
+exit 0
