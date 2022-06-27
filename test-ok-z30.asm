@@ -16,13 +16,12 @@ main:
 		MOV 	%15,%14
 		SUBS	%15,$4,%15
 @main_body:
-		MOV 	$2,mapa4_4
-		MOV 	$2,mapa4_4
 		MOV 	$2,mapa1_1
 		MOV 	$2,mapa2_1
 		MOV 	$5,mapa2_2
 		MOV 	$2,mapa3_4
 		MOV 	$5,mapa3_2
+		MOV 	$2,mapa4_4
 		MOV 	mapa1_1,-4(%14)
 		MOV 	$5,mapa1_1
 		SUBS	mapa1_1,mapa2_1,%0

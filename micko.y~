@@ -107,7 +107,7 @@ dictionary
 			{
         err("invalid syntax in dictionary declaration");
 			}
-			if ($4 != 1)
+			if ($6 != 1)
 			{
         err("invalid syntax in dictionary declaration");
 			}
@@ -145,7 +145,6 @@ value
 			if (id != -1){
           		err("Key already used '%s'", get_name($2));
 			}
-
 			  code("\n%s:\n\t\tWORD\t1", map_attribute_name);
 			int atr_id = insert_symbol(map_attribute_name, MAP_ATR,get_type						(idx),atoi(get_name($2)), 	atoi(get_name($4)));
 			array_assigned_elements_idx[num_assigned_elements]= atr_id;
@@ -163,7 +162,6 @@ function_list
 function
   : _TYPE _ID
       {
-			//if(first_time == -1){
         fun_idx = lookup_symbol($2, FUN);
         if(fun_idx == NO_INDEX)
           fun_idx = insert_symbol($2, FUN, $1, NO_ATR, NO_ATR);
@@ -172,11 +170,10 @@ function
 
         code("\n%s:", $2);
         code("\n\t\tPUSH\t%%14");
-        code("\n\t\tMOV \t%%15,%%14");//}
+        code("\n\t\tMOV \t%%15,%%14");
       }
     _LPAREN parameter _RPAREN body
       {
-		//	if(first_time == -1){
         clear_symbols(fun_idx + 1);
         var_num = 0;
         
@@ -185,20 +182,18 @@ function
         code("\n\t\tPOP \t%%14");
         code("\n\t\tRET");
 				}
-     // }
   ;
 
 parameter
   : /* empty */
       { 
-			//if(first_time == -1){
-				set_atr1(fun_idx, 0); }//}
+
+				set_atr1(fun_idx, 0); }
 
   | _TYPE _ID
       {
-			//if(first_time = -1){
+
         insert_symbol($2, PAR, $1, 1, NO_ATR);
-				//}
 				set_atr1(fun_idx, 1);
         set_atr2(fun_idx, $1);
 				
@@ -208,7 +203,6 @@ parameter
 body
   : _LBRACKET variable_list
       {
-			//if(first_time != -1){
         if(var_num)
           code("\n\t\tSUBS\t%%15,$%d,%%15", 4*var_num);
 					const char* name = get_name(fun_idx);
@@ -218,19 +212,7 @@ body
 				strcpy(name_with_extension, get_name(fun_idx));
 				strcat(name_with_extension, "_body"); 
 	 			if (strcmp(name_with_extension, "main_body") == 0){
-							int v = 0;
-              for(; v < elements_num; v++){
-							struct_dict_elements elem = elements_map[0][v];
-          	  if (get_atr1(elem.idx)==NO_ATR){  //dodaj provjeru da li valja tip
-				  			gen_mov(elem.value, elem.idx);
-					}	
-         if (elem.idx != -1){
-	      	if(get_type(elem.idx) != get_type(elem.value))
-						err("incompatible types in assignmenttt"); 
-				  gen_mov(elem.value, elem.idx);
-        }
-              	
-        }
+							
               int i = 0;
               for(; i < num_assigned_elements; i++){
               	int idx = array_assigned_elements_idx[i];
@@ -238,9 +220,25 @@ body
 	    				name_with_extension = malloc(100);
 	    				sprintf(name_with_extension, "%d", get_atr2(idx));
               	gen_mov(lookup_symbol(name_with_extension, LIT), idx);}
-              }}
+              }
+							int v = 0;
+              for(; v < elements_num; v++){
+							struct_dict_elements elem = elements_map[0][v];
+						if (get_type(elem.value)!=get_type(elem.idx)){
+							err("uncompatible type of dictionary key '%d'", elem.idx);
+						}
+          	  if (get_atr1(elem.idx)==NO_ATR){  
+				  			gen_mov(elem.value, elem.idx);
+							}	else{
+					  	if(get_type(elem.idx) != get_type(elem.value))
+								err("incompatible types in assignmenttt"); 
+							gen_mov(elem.value, elem.idx);
+				    }
+              	
+        }
+							}
             
-       // }
+
       
     statement_list _RBRACKET
   ;
@@ -292,17 +290,16 @@ assignment_statement
 
 	| assign_dict _ASSIGN num_exp _SEMICOLON
       {
-				//if(first_time != -1){
-					if (get_atr1($1)==NO_ATR){  //dodaj provjeru da li valja tip
+
+					if (get_atr1($1)==NO_ATR){ 
 				  		gen_mov($3, $1);
 					}	
           if ($1 != -1){
 	      	if(get_type($1) != get_type($3))
 			err("incompatible types in assignmenttt"); 
 	    	gen_mov($3, $1);
-			//set_atr2($1, $3);
         }}
-      //}
+
   ;
 
 num_exp
@@ -310,7 +307,7 @@ num_exp
 
   | num_exp _AROP exp
       {
-			//if(first_time != -1){
+
         if(get_type($1) != get_type($3))
           err("invalid operands: arithmetic operation");
         int t1 = get_type($1);    
@@ -325,7 +322,7 @@ num_exp
         gen_sym_name($$);
         set_type($$, t1);
 			}
-     // }
+
   ;
 
 exp

@@ -22,12 +22,12 @@ main:
 		MOV 	$2,mapa3_4
 		MOV 	$5,mapa3_2
 		MOV 	$2,mapa4_4
-		MOV 	$3,mapa4_4
+		MOV 	$1,mapa3_4
 		MOV 	mapa1_1,-4(%14)
-		MOV 	$5,mapa1_1
-		SUBS	mapa1_1,mapa2_1,%0
+		MOV 	$4,mapa2_1
+		ADDS	mapa3_4,mapa4_4,%0
 		MOV 	%0,-4(%14)
-		MOV 	mapa4_4,%13
+		MOV 	-4(%14),%13
 		JMP 	@main_exit
 @main_exit:
 		MOV 	%14,%15
