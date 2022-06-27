@@ -410,70 +410,67 @@ argument
 
   | num_exp
     { 
-				//if(first_time != -1){
+
       if(get_atr2(fcall_idx) != get_type($1))
         err("incompatible type for argument");
       free_if_reg($1);
       code("\n\t\t\tPUSH\t");
       gen_sym_name($1);
       $$ = 1;}
-    //}
+
   ;
 
 if_statement
   : if_part %prec ONLY_IF
       {
-			//if(first_time != -1){
-			 code("\n@exit%d:", $1); }//}
+
+			 code("\n@exit%d:", $1); }
 
   | if_part _ELSE statement
       { 
-					//if(first_time != -1){
-			code("\n@exit%d:", $1); }//}
+			code("\n@exit%d:", $1); }
   ;
 
 if_part
   : _IF _LPAREN
       {
-			//if(first_time == -1){
         $<i>$ = ++lab_num;
         code("\n@if%d:", lab_num);}
-     // }
     rel_exp
       {
-				//if(first_time == -1){
+
         code("\n\t\t%s\t@false%d", opp_jumps[$4], $<i>3);
         code("\n@true%d:", $<i>3);}
-      //}
+      
     _RPAREN statement
       {
-			//if(first_time == -1){
+
         code("\n\t\tJMP \t@exit%d", $<i>3);
         code("\n@false%d:", $<i>3);
         $$ = $<i>3;}
-     // }
+     
   ;
 
 rel_exp
   : num_exp _RELOP num_exp
       {
-			//if(first_time == -1){
+
         if(get_type($1) != get_type($3))
           err("invalid operands: relational operator");
         $$ = $2 + ((get_type($1) - 1) * RELOP_NUMBER);
         gen_cmp($1, $3);}
-      //}
+      
   ;
 
 return_statement
   : _RETURN num_exp _SEMICOLON
       {
-					//	if(first_time == -1){
+
         if(get_type(fun_idx) != get_type($2))
           err("incompatible types in return");
         gen_mov($2, FUN_REG);
         code("\n\t\tJMP \t@%s_exit", get_name(fun_idx));        
-      }//}
+      }
   ;
 
 %%
