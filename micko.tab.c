@@ -478,7 +478,7 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint16 yyrline[] =
 {
        0,    69,    69,    68,    82,    84,    88,    97,    99,   104,
-     103,   125,   127,   131,   132,   136,   158,   159,   164,   163,
+     103,   124,   126,   130,   131,   135,   158,   159,   164,   163,
      189,   193,   205,   204,   246,   248,   252,   263,   265,   269,
      270,   271,   272,   276,   280,   291,   306,   308,   328,   330,
      338,   345,   347,   352,   381,   384,   390,   389,   409,   411,
@@ -1369,17 +1369,16 @@ yyreduce:
         if (lookup_symbol((yyvsp[0].s), MAP) != NO_INDEX)
            err("already defined dictionary with same name '%s'", (yyvsp[0].s));
         else{
-			int type1 = get_type((yyvsp[-4].i));
-			int type2 = get_type((yyvsp[-2].i));
+			
       idx = insert_symbol((yyvsp[0].s), MAP, (yyvsp[-2].i), (yyvsp[-4].i), 0);
 			}
 
 		}
-#line 1379 "micko.tab.c" /* yacc.c:1646  */
+#line 1378 "micko.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 137 "micko.y" /* yacc.c:1646  */
+#line 136 "micko.y" /* yacc.c:1646  */
     {
 			char* map_attribute_name;
 		  char* map_name = get_name(idx);
@@ -1392,7 +1391,8 @@ yyreduce:
           		err("Key already used '%s'", get_name((yyvsp[-3].i)));
 			}
 			  code("\n%s:\n\t\tWORD\t1", map_attribute_name);
-			int atr_id = insert_symbol(map_attribute_name, MAP_ATR,get_type						(idx),atoi(get_name((yyvsp[-3].i))), 	atoi(get_name((yyvsp[-1].i))));
+		int atr_id = insert_symbol(map_attribute_name, MAP_ATR,get_type(idx)
+															,atoi(get_name((yyvsp[-3].i))),atoi(get_name((yyvsp[-1].i))));
 			array_assigned_elements_idx[num_assigned_elements]= atr_id;
 	    num_assigned_elements++;
 		}

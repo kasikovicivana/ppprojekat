@@ -145,7 +145,8 @@ value
           		err("Key already used '%s'", get_name($2));
 			}
 			  code("\n%s:\n\t\tWORD\t1", map_attribute_name);
-			int atr_id = insert_symbol(map_attribute_name, MAP_ATR,get_type						(idx),atoi(get_name($2)), 	atoi(get_name($4)));
+		int atr_id = insert_symbol(map_attribute_name, MAP_ATR,get_type(idx)
+															,atoi(get_name($2)),atoi(get_name($4)));
 			array_assigned_elements_idx[num_assigned_elements]= atr_id;
 	    num_assigned_elements++;
 		}

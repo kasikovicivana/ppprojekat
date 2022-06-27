@@ -322,7 +322,6 @@ num_exp
         gen_sym_name($$);
         set_type($$, t1);
 			}
-
   ;
 
 exp
